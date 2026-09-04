@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>متجر A STYLE</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#fff6fa;color:#222}.head{padding:18px;background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:3}.brand{font-size:25px;font-weight:bold}.cats{display:flex;gap:8px;overflow:auto;padding:10px 0}.cats button{white-space:nowrap;border:1px solid #e91e63;background:#fff;color:#e91e63;border-radius:22px;padding:9px 14px}.cats button.active{background:#e91e63;color:#fff}.wrap{max-width:1100px;margin:auto;padding:15px}.hero{background:#ffe6f0;border-radius:18px;padding:20px;margin:15px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}.card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #eee}.card img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#eee}.body{padding:12px}.price{font-size:20px;font-weight:bold;color:#d81b60}.old{text-decoration:line-through;color:#999;font-size:13px}.btn{width:100%;padding:12px;border:0;border-radius:10px;background:#25d366;color:#fff;font-weight:bold;margin-top:9px}.cart{position:fixed;left:15px;bottom:15px;background:#e91e63;color:#fff;border:0;border-radius:50px;padding:14px 18px;font-weight:bold;z-index:5}.drawer{display:none;position:fixed;inset:0;background:#0007;z-index:10}.panel{background:#fff;width:min(520px,92%);height:100%;margin-right:auto;padding:18px;overflow:auto}.item{display:flex;gap:10px;border-bottom:1px solid #eee;padding:10px 0}.item img{width:60px;height:60px;object-fit:cover;border-radius:8px}.qty{display:flex;gap:10px;align-items:center}.qty button{border:1px solid #ddd;background:#fff;border-radius:8px;padding:5px 10px}
+</style></head>
+<body>
+<div class="head"><div class="wrap"><div class="brand">💗 A STYLE</div><div>متجر الملابس والأزياء</div>
+<div class="cats" id="cats"></div></div></div>
+<div class="wrap"><div class="hero"><h2>💗 أهلاً بيكي في A STYLE</h2><p>اختاري منتجاتك، حددي الكمية والمقاس، واضغطي تأكيد الطلب للانتقال مباشرة إلى واتساب.</p></div>
+<div id="products" class="grid">جاري تحميل المنتجات...</div></div>
+<button class="cart" onclick="openCart()">🛒 السلة (<span id="count">0</span>)</button>
+<div class="drawer" id="drawer" onclick="if(event.target===this)closeCart()"><div class="panel"><button onclick="closeCart()">✕</button><h2>السلة</h2><div id="cart"></div><hr><h2>الإجمالي: <span id="total">0</span> EGP</h2><button class="btn" onclick="sendWhatsApp()">تأكيد الطلب عبر واتساب 💬</button></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://atwpvvzxqqwcbyjsttwr.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_i9kMQbMAL5y-pkniTpftmw_6ab3_bB6";
+const WHATSAPP="201507540976"; // 01507540976
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+let products=[],cartItems=[],cat='الكل';
+const cats=['الكل','كاجوال حريمي','أطفالي','لانجيري و هوم وير','رجالي'];
+document.getElementById('cats').innerHTML=cats.map((x,i)=>`<button class="${i?'':'active'}" onclick="setCat('${x}',this)">${x}</button>`).join('');
+function setCat(x,b){cat=x;document.querySelectorAll('.cats button').forEach(y=>y.classList.remove('active'));b.classList.add('active');render()}
+async function load(){const {data,error}=await db.from('products').select('*').order('created_at',{ascending:false});if(error){document.getElementById('products').innerHTML='❌ تعذر تحميل المنتجات';console.error(error);return}products=data||[];render()}
+function render(){let a=products.filter(p=>cat==='الكل'||p.category===cat);document.getElementById('products').innerHTML=a.map(p=>`<div class="card"><img src="${p.image_url||''}"><div class="body"><b>${esc(p.name)}</b><p>${esc(p.description||'')}</p>${p.old_price?`<span class="old">${p.old_price} EGP</span> `:''}<div class="price">${p.price} EGP</div><button class="btn" onclick="add('${p.id}')">أضف للسلة 🛒</button></div></div>`).join('')||'<div>لا توجد منتجات في هذا القسم حالياً.</div>'}
+function add(id){let p=products.find(x=>x.id===id),x=cartItems.find(x=>x.id===id);if(x)x.qty++;else cartItems.push({id,product:p,qty:1});updateCount();openCart()}
+function updateCount(){count.textContent=cartItems.reduce((s,x)=>s+x.qty,0)}
+function openCart(){drawer.style.display='block';renderCart()}function closeCart(){drawer.style.display='none'}
+function renderCart(){cart.innerHTML=cartItems.map((x,i)=>`<div class="item"><img src="${x.product.image_url||''}"><div><b>${esc(x.product.name)}</b><div>${x.product.price} EGP</div><div class="qty"><button onclick="change(${i},-1)">−</button>${x.qty}<button onclick="change(${i},1)">+</button></div></div></div>`).join('')||'السلة فارغة';total.textContent=cartItems.reduce((s,x)=>s+x.product.price*x.qty,0)}
+function change(i,n){cartItems[i].qty+=n;if(cartItems[i].qty<=0)cartItems.splice(i,1);updateCount();renderCart()}
+function sendWhatsApp(){if(!cartItems.length){alert('السلة فارغة');return}let lines=['السلام عليكم ❤️','أريد تأكيد هذا الطلب:',''];cartItems.forEach(x=>{lines.push('🛍️ المنتج: '+x.product.name,'🔢 الكمية: '+x.qty,'💰 السعر: '+x.product.price+' EGP','💰 الإجمالي: '+(x.product.price*x.qty)+' EGP','');});lines.push('💰 إجمالي الطلب: '+cartItems.reduce((s,x)=>s+x.product.price*x.qty,0)+' EGP');location.href='https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(lines.join('\\n'))}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+load();
+</script></body></html>
