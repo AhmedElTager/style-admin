@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A STYLE - لوحة التحكم</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f5f5f5;color:#111}
+header{background:#111;color:#fff;padding:20px}.wrap{max-width:1050px;margin:auto;padding:16px}
+.brand{font-size:25px;font-weight:bold}.sub{color:#bbb;margin-top:5px}
+.box{background:#fff;border:1px solid #ddd;border-radius:16px;padding:18px;margin:16px 0}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}
+label{font-weight:bold}input,select,textarea{padding:12px;border:1px solid #ccc;border-radius:10px;font-size:15px}textarea{min-height:90px}
+button{border:0;border-radius:10px;padding:11px 15px;font-weight:bold;cursor:pointer}.primary{background:#111;color:#fff}.gray{background:#eee}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.msg{display:none;padding:12px;border-radius:10px;margin-top:12px}.ok{display:block;background:#e7f6eb;color:#176b32}.err{display:block;background:#fdeaea;color:#9b1c1c}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{border:1px solid #ddd;border-radius:14px;overflow:hidden}.card img{width:100%;aspect-ratio:1;object-fit:cover;background:#eee}.body{padding:12px}.badge{background:#111;color:#fff;border-radius:20px;padding:5px 8px;font-size:12px}.price{font-size:19px;font-weight:bold;margin-top:5px}.old{text-decoration:line-through;color:#888;font-size:13px}.cardactions{display:flex;gap:7px;margin-top:10px}.cardactions button{flex:1}.empty{text-align:center;padding:30px;color:#777}
+@media(max-width:700px){.form{grid-template-columns:1fr}.full{grid-column:auto}.products{grid-template-columns:1fr 1fr}}
+@media(max-width:450px){.products{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="brand">A STYLE - لوحة إدارة المنتجات</div><div class="sub">إضافة وتعديل وحذف المنتجات بدون كتابة كود</div></div></header>
+
+<main class="wrap">
+<div class="box">
+<h2 id="title">➕ إضافة منتج جديد</h2>
+<div class="form">
+<div class="field"><label>اسم المنتج *</label><input id="name" placeholder="مثال: بيجامة حريمي"></div>
+<div class="field"><label>القسم *</label><select id="category"><option>كاجوال حريمي</option><option>أطفالي</option><option>لانجيري و هوم وير</option><option>رجالي</option></select></div>
+<div class="field"><label>السعر *</label><input id="price" type="number" placeholder="350"></div>
+<div class="field"><label>السعر القديم</label><input id="old_price" type="number" placeholder="450"></div>
+<div class="field full">
+<label>صورة المنتج *</label>
+<input id="image_file" type="file" accept="image/*" onchange="previewImage(this)">
+<small id="imageHint">اختاري صورة من الموبايل 📷 — لا تحتاجين لكتابة أي رابط</small>
+<div id="previewWrap" style="display:none;margin-top:8px">
+<img id="preview" style="width:140px;height:140px;object-fit:cover;border-radius:14px;border:1px solid #ddd">
+</div>
+</div>
+<div class="field full"><label>وصف المنتج</label><textarea id="description" placeholder="اكتبي وصف المنتج..."></textarea></div>
+</div>
+<div class="actions"><button id="saveBtn" class="primary" onclick="saveProduct()">💾 حفظ المنتج</button><button class="gray" onclick="resetForm()">منتج جديد</button><button class="gray" onclick="loadProducts()">🔄 تحديث</button></div>
+<div id="msg" class="msg"></div><div style="margin-top:10px;color:#777;font-size:13px">📷 اختاري الصورة من الموبايل، وسيتم رفعها تلقائيًا وحفظها مع المنتج.</div>
+</div>
+
+<div class="box"><h2>📦 المنتجات <span id="count"></span></h2><div id="products" class="products">جاري التحميل...</div></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const URL="https://atwpvvzxqqwcbyjsttwr.supabase.co";
+const KEY="sb_publishable_i9kMQbMAL5y-pkniTpftmw_6ab3_bB6";
+const BUCKET="products";
+const db=supabase.createClient(URL,KEY);
+let list=[],editing=null;
+const $=x=>document.getElementById(x);
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function msg(t,ok){$('msg').textContent=t;$('msg').className='msg '+(ok?'ok':'err');setTimeout(()=>$('msg').className='msg',6000)}
+function slug(s){return String(s).trim().toLowerCase().replace(/[^\u0600-\u06FFa-z0-9]+/g,'-').replace(/^-|-$/g,'')||('product-'+Date.now())}
+
+function previewImage(input){
+  const file=input.files?.[0];
+  if(!file){$('previewWrap').style.display='none';return}
+  if(!file.type.startsWith('image/')){msg('⚠️ اختاري ملف صورة فقط.');input.value='';return}
+  if(file.size>8*1024*1024){msg('⚠️ الصورة أكبر من 8 ميجابايت. اختاري صورة أصغر.');input.value='';return}
+  $('preview').src=URL.createObjectURL(file);
+  $('previewWrap').style.display='block';
+}
+
+async function uploadImage(file){
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+  const path=Date.now()+'-'+Math.random().toString(36).slice(2,10)+'.'+ext;
+  const r=await db.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+  if(r.error) throw r.error;
+  const pub=db.storage.from(BUCKET).getPublicUrl(path);
+  return {url:pub.data.publicUrl,path};
+}
+
+async function loadProducts(){
+  const r=await db.from('products').select('*').order('created_at',{ascending:false});
+  if(r.error){$('products').innerHTML='❌ '+esc(r.error.message);return}
+  list=r.data||[];$('count').textContent='('+list.length+')';
+  if(!list.length){$('products').innerHTML='<div class="empty">لا توجد منتجات حتى الآن ❤️</div>';return}
+  $('products').innerHTML=list.map(p=>`<div class="card">
+    <img src="${esc(p.image_url||'')}" onerror="this.style.display='none'">
+    <div class="body">
+      <span class="badge">${esc(p.category||'بدون قسم')}</span>
+      <p><b>${esc(p.name)}</b></p>
+      ${p.old_price?`<span class="old">${esc(p.old_price)} EGP</span>`:''}
+      <div class="price">${esc(p.price)} EGP</div>
+      <div class="cardactions">
+        <button class="gray" onclick="edit('${p.id}')">✏️ تعديل</button>
+        <button class="primary" onclick="del('${p.id}')">🗑️ حذف</button>
+      </div>
+    </div>
+  </div>`).join('')
+}
+
+async function saveProduct(){
+  const btn=$('saveBtn');
+  const name=$('name').value.trim();
+  const category=$('category').value;
+  const price=Number($('price').value);
+  const old=$('old_price').value===''?null:Number($('old_price').value);
+  const description=$('description').value.trim();
+  const file=$('image_file').files?.[0];
+
+  if(!name||!price){msg('⚠️ اكتبي اسم المنتج والسعر.');return}
+  if(!editing&&!file){msg('⚠️ اختاري صورة المنتج.');return}
+
+  btn.disabled=true;
+  btn.textContent='⏳ جاري الحفظ...';
+
+  try{
+    let imageUrl=editing?.image_url||'';
+    if(file){
+      btn.textContent='⏳ جاري رفع الصورة...';
+      const uploaded=await uploadImage(file);
+      imageUrl=uploaded.url;
+    }
+
+    const data={
+      name,
+      slug:slug(name),
+      category,
+      description,
+      price,
+      old_price:old,
+      image_url:imageUrl
+    };
+
+    btn.textContent='⏳ جاري حفظ المنتج...';
+    const r=editing
+      ?await db.from('products').update(data).eq('id',editing.id)
+      :await db.from('products').insert(data);
+
+    if(r.error) throw r.error;
+
+    msg(editing?'✅ تم تعديل المنتج بنجاح':'✅ تم إضافة المنتج بنجاح',true);
+    resetForm();
+    await loadProducts();
+  }catch(e){
+    msg('❌ '+(e.message||'حدث خطأ أثناء الحفظ'));
+  }finally{
+    btn.disabled=false;
+    btn.textContent='💾 حفظ المنتج';
+  }
+}
+
+function edit(id){
+  const p=list.find(x=>String(x.id)===String(id));if(!p)return;
+  editing=p;
+  $('title').textContent='✏️ تعديل المنتج';
+  $('name').value=p.name||'';
+  $('category').value=p.category||'كاجوال حريمي';
+  $('price').value=p.price??'';
+  $('old_price').value=p.old_price??'';
+  $('description').value=p.description||'';
+  $('image_file').value='';
+  if(p.image_url){
+    $('preview').src=p.image_url;
+    $('previewWrap').style.display='block';
+    $('imageHint').textContent='الصورة الحالية موجودة — اختاري صورة جديدة فقط لو عايزة تغيّريها';
+  }
+  scrollTo(0,0);
+}
+
+async function del(id){
+  const p=list.find(x=>String(x.id)===String(id));if(!p||!confirm('حذف '+p.name+' ؟'))return;
+  const r=await db.from('products').delete().eq('id',id);
+  if(r.error){msg('❌ '+r.error.message);return}
+  msg('🗑️ تم الحذف',true);
+  loadProducts();
+}
+
+function resetForm(){
+  editing=null;
+  $('title').textContent='➕ إضافة منتج جديد';
+  ['name','price','old_price','description'].forEach(x=>$(x).value='');
+  $('image_file').value='';
+  $('previewWrap').style.display='none';
+  $('imageHint').textContent='اختاري صورة من الموبايل 📷 — لا تحتاجين لكتابة أي رابط';
+  $('category').value='كاجوال حريمي';
+}
+
+loadProducts();
+</script>
+<script>
+const URL="https://atwpvvzxqqwcbyjsttwr.supabase.co";
+const KEY="sb_publishable_i9kMQbMAL5y-pkniTpftmw_6ab3_bB6";
+const db=supabase.createClient(URL,KEY);
+let list=[],editing=null;
+const $=x=>document.getElementById(x);
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function msg(t,ok){$('msg').textContent=t;$('msg').className='msg '+(ok?'ok':'err');setTimeout(()=>$('msg').className='msg',5000)}
+function slug(s){return String(s).trim().toLowerCase().replace(/[^\u0600-\u06FFa-z0-9]+/g,'-').replace(/^-|-$/g,'')||('product-'+Date.now())}
+
+async function loadProducts(){
+ const r=await db.from('products').select('*').order('created_at',{ascending:false});
+ if(r.error){$('products').innerHTML='❌ '+esc(r.error.message);return}
+ list=r.data||[];$('count').textContent='('+list.length+')';
+ if(!list.length){$('products').innerHTML='<div class="empty">لا توجد منتجات حتى الآن ❤️</div>';return}
+ $('products').innerHTML=list.map(p=>`<div class="card"><img src="${esc(p.image_url||'')}" onerror="this.style.display='none'"><div class="body"><span class="badge">${esc(p.category||'بدون قسم')}</span><p><b>${esc(p.name)}</b></p>${p.old_price?`<span class="old">${esc(p.old_price)} EGP</span>`:''}<div class="price">${esc(p.price)} EGP</div><div class="cardactions"><button class="gray" onclick="edit('${p.id}')">✏️ تعديل</button><button class="primary" onclick="del('${p.id}')">🗑️ حذف</button></div></div></div>`).join('')
+}
+
+async function saveProduct(){
+ const name=$('name').value.trim(),category=$('category').value,price=Number($('price').value),old=$('old_price').value===''?null:Number($('old_price').value),image=$('image_url').value.trim(),description=$('description').value.trim();
+ if(!name||!price||!image){msg('⚠️ اكتبي الاسم والسعر ورابط الصورة.');return}
+ const data={name,slug:slug(name),category,description,price,old_price:old,image_url:image};
+ const r=editing?await db.from('products').update(data).eq('id',editing):await db.from('products').insert(data);
+ if(r.error){msg('❌ '+r.error.message);return}
+ msg(editing?'✅ تم تعديل المنتج':'✅ تم إضافة المنتج',true);resetForm();loadProducts()
+}
+function edit(id){
+ const p=list.find(x=>String(x.id)===String(id));if(!p)return;editing=p.id;$('title').textContent='✏️ تعديل المنتج';$('name').value=p.name||'';$('category').value=p.category||'كاجوال حريمي';$('price').value=p.price??'';$('old_price').value=p.old_price??'';$('image_url').value=p.image_url||'';$('description').value=p.description||'';scrollTo(0,0)
+}
+async function del(id){
+ const p=list.find(x=>String(x.id)===String(id));if(!p||!confirm('حذف '+p.name+' ؟'))return;
+ const r=await db.from('products').delete().eq('id',id);if(r.error){msg('❌ '+r.error.message);return}msg('🗑️ تم الحذف',true);loadProducts()
+}
+function resetForm(){editing=null;$('title').textContent='➕ إضافة منتج جديد';['name','price','old_price','image_url','description'].forEach(x=>$(x).value='');$('category').value='كاجوال حريمي'}
+loadProducts();
+</script>
+</body></html>
