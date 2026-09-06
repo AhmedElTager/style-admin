@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A STYLE — إدارة الطلبات</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f7f5f1;color:#111;font-family:Tahoma,Arial,sans-serif}
+.wrap{width:min(1050px,94%);margin:auto}.head{background:#0b0b0b;color:#fff;padding:18px 0;position:sticky;top:0;z-index:10}
+.headin{display:flex;justify-content:space-between;align-items:center;gap:10px}.logo{font-weight:900;letter-spacing:2px}.sub{font-size:10px;color:#aaa;margin-top:4px}
+button,select{font:inherit}.refresh{border:1px solid #333;background:#fff;color:#111;border-radius:11px;padding:9px 13px;font-weight:bold}
+h1{font-size:25px;margin:25px 0 5px}.hint{color:#777;font-size:12px;margin:0 0 18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#fff;border:1px solid #e5e0d9;border-radius:17px;padding:16px}.stat small{color:#888}.stat b{display:block;font-size:25px;margin-top:5px}
+.card{margin-top:18px;background:#fff;border:1px solid #e5e0d9;border-radius:20px;overflow:hidden}
+.row{padding:15px;border-bottom:1px solid #eee;display:grid;grid-template-columns:1fr auto;gap:12px}.row:last-child{border:0}.num{font-weight:900}.meta{font-size:12px;line-height:1.9;color:#666}.items{font-size:12px;color:#333;margin-top:5px}
+select{border:1px solid #ddd;border-radius:11px;padding:9px;background:#fff;min-width:125px}
+.empty{text-align:center;padding:45px;color:#777}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:1/-1}.row{grid-template-columns:1fr}.headin{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header class="head"><div class="wrap headin"><div><div class="logo">A STYLE</div><div class="sub">إدارة الطلبات</div></div><button class="refresh" onclick="loadOrders()">تحديث الطلبات 🔄</button></div></header>
+<main class="wrap">
+<h1>الطلبات 📦</h1><p class="hint">غيّري حالة الطلب، والعميلة تقدر تعرف حالته من نفس جهازها.</p>
+<div class="stats">
+<div class="stat"><small>كل الطلبات</small><b id="all">0</b></div>
+<div class="stat"><small>طلبات جديدة</small><b id="new">0</b></div>
+<div class="stat"><small>تم التسليم</small><b id="done">0</b></div>
+</div>
+<div class="card" id="orders"><div class="empty">جاري تحميل الطلبات...</div></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const URL="https://atwpvvzxqqwcbyjsttwr.supabase.co";
+const KEY="sb_publishable_i9kMQbMAL5y-pkniTpftmw_6ab3_bB6";
+const db=supabase.createClient(URL,KEY);
+const statuses=["تم إنشاء الطلب","جاري التجهيز","تم الشحن","تم التسليم","ملغي"];
+
+async function loadOrders(){
+ const box=document.getElementById("orders");
+ const r=await db.from("orders").select("*").order("created_at",{ascending:false});
+ if(r.error){
+  box.innerHTML='<div class="empty">⚠️ جدول الطلبات غير موجود في Supabase بعد.<br>نحتاج نضيف جدول <b>orders</b> مرة واحدة فقط.</div>';
+  document.getElementById("all").textContent="0";document.getElementById("new").textContent="0";document.getElementById("done").textContent="0";return;
+ }
+ const data=r.data||[];
+ document.getElementById("all").textContent=data.length;
+ document.getElementById("new").textContent=data.filter(o=>o.status==="تم إنشاء الطلب").length;
+ document.getElementById("done").textContent=data.filter(o=>o.status==="تم التسليم").length;
+ box.innerHTML=data.map(o=>`
+  <div class="row">
+   <div>
+    <div class="num">${esc(o.order_number||o.number||"بدون رقم")}</div>
+    <div class="meta">👤 ${esc(o.customer_name||o.customer||"—")} · 📱 ${esc(o.customer_phone||"—")}<br>📍 ${esc(o.governorate||o.gov||"—")} · 💰 ${Number(o.total||0).toLocaleString("ar-EG")} ج.م</div>
+    <div class="items">${esc(o.items_text||"تفاصيل المنتجات محفوظة في الطلب")}</div>
+   </div>
+   <select onchange="changeStatus('${o.id}',this.value)">
+    ${statuses.map(s=>`<option ${s===(o.status||"تم إنشاء الطلب")?"selected":""}>${s}</option>`).join("")}
+   </select>
+  </div>`).join("")||'<div class="empty">مفيش طلبات لسه 📦</div>';
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+async function changeStatus(id,status){
+ const r=await db.from("orders").update({status}).eq("id",id);
+ if(r.error){alert("لم يتم تغيير الحالة: "+r.error.message);loadOrders();return}
+ loadOrders();
+}
+loadOrders();
+</script>
+</body></html>
