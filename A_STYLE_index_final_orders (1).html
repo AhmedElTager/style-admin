@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<title>A STYLE — متجر الملابس والأزياء</title>
+<style>
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#f4f4f4;color:#111}
+button,input{font:inherit}.wrap{width:min(1180px,94%);margin:auto}
+.header{background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:20}
+.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;letter-spacing:1px}.logoMark{width:42px;height:42px;background:#080808;color:#fff;border-radius:12px;display:grid;place-items:center;font-size:23px}
+.sub{font-size:11px;color:#777;font-weight:400;display:block;margin-top:3px}
+.navBtns{display:flex;gap:8px;align-items:center}.iconBtn{border:1px solid #ddd;background:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}
+.hero{margin:18px 0;background:#080808;color:#fff;border-radius:24px;min-height:300px;padding:30px;display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative}
+.hero:after{content:"A STYLE";position:absolute;left:15px;bottom:-42px;font-size:100px;font-weight:900;color:#111;letter-spacing:5px}
+.heroText{position:relative;z-index:1;max-width:650px}.pill{display:inline-block;background:#fff;color:#111;border-radius:30px;padding:8px 13px;font-size:11px;font-weight:bold}
+.hero h1{font-size:clamp(30px,6vw,58px);margin:18px 0 10px;line-height:1.05}.hero p{color:#ccc;line-height:1.9;margin:0 0 18px}.heroBtn{background:#fff;color:#111;border:0;border-radius:12px;padding:13px 20px;font-weight:bold;cursor:pointer}
+.heroBox{width:220px;height:220px;border:1px solid #333;border-radius:28px;display:grid;place-items:center;font-size:90px;position:relative;z-index:1}
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.cat{background:#fff;border:1px solid #ddd;border-radius:16px;padding:16px;text-align:right;cursor:pointer}.cat.active{background:#080808;color:#fff;border-color:#080808}.cat b{display:block}.cat span{font-size:11px;color:#888}.cat.active span{color:#bbb}
+.tools{display:flex;gap:10px;align-items:center;margin:22px 0 12px}.search{flex:1;background:#fff;border:1px solid #ddd;border-radius:13px;padding:13px 15px;outline:none}.refresh{background:#080808;color:#fff;border:0;border-radius:13px;padding:13px 17px;cursor:pointer}
+.sectionTitle{display:flex;justify-content:space-between;align-items:end;margin:24px 0 12px}.sectionTitle h2{margin:0}.sectionTitle p{margin:5px 0 0;color:#777;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.card{background:#fff;border:1px solid #ddd;border-radius:18px;overflow:hidden;box-shadow:0 5px 20px #00000008}.imgWrap{position:relative;background:#eee}.card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}.tag{position:absolute;top:10px;right:10px;background:#080808;color:#fff;border-radius:20px;padding:6px 9px;font-size:10px}.cardBody{padding:13px}.card h3{margin:0;font-size:15px}.desc{font-size:11px;color:#777;line-height:1.6;min-height:35px}.prices{display:flex;gap:8px;align-items:center;margin-top:8px}.price{font-size:18px;font-weight:900}.old{text-decoration:line-through;color:#999;font-size:11px}.buy{width:100%;margin-top:11px;border:0;border-radius:11px;background:#080808;color:#fff;padding:11px;cursor:pointer;font-weight:bold}
+.empty{background:#fff;border:1px dashed #ccc;border-radius:18px;padding:45px;text-align:center;color:#777;grid-column:1/-1}
+.cart{position:fixed;left:15px;bottom:15px;z-index:30;background:#080808;color:#fff;border:0;border-radius:50px;padding:14px 18px;box-shadow:0 10px 30px #0003;cursor:pointer}
+.drawer{display:none;position:fixed;inset:0;background:#0009;z-index:50}.panel{background:#fff;width:min(520px,94%);height:100%;margin-right:auto;padding:20px;overflow:auto}.panelHead{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#eee;border-radius:9px;padding:8px 11px;cursor:pointer}.item{display:flex;gap:10px;border-bottom:1px solid #eee;padding:12px 0}.item img{width:65px;height:65px;object-fit:cover;border-radius:10px}.qty{display:flex;gap:8px;align-items:center;margin-top:7px}.qty button{border:1px solid #ddd;background:#fff;border-radius:8px;padding:4px 10px;cursor:pointer}.wa{width:100%;border:0;background:#111;color:#fff;padding:13px;border-radius:11px;font-weight:bold;cursor:pointer}
+.footer{margin-top:50px;background:#080808;color:#fff;padding:28px 0}.footer p{color:#aaa;font-size:12px}
+.checkoutOverlay{display:none;position:fixed;inset:0;background:#0009;z-index:80;padding:18px;overflow:auto}
+.checkoutCard{background:#fff;width:min(560px,100%);margin:20px auto;border-radius:24px;padding:22px;box-shadow:0 20px 60px #0005}
+.checkoutHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.checkoutHead h2{margin:0;font-size:22px}
+.checkoutClose{border:0;background:#eee;border-radius:10px;padding:8px 11px;cursor:pointer}
+.checkoutGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.checkoutField{display:flex;flex-direction:column;gap:6px}
+.checkoutField.full{grid-column:1/-1}
+.checkoutField label{font-weight:bold;font-size:13px}
+.checkoutField input,.checkoutField select,.checkoutField textarea{width:100%;border:1px solid #ddd;border-radius:12px;padding:12px;background:#fff;outline:none}
+.checkoutField textarea{min-height:80px;resize:vertical}
+.shippingBox{background:#f6f6f6;border-radius:15px;padding:13px;margin:14px 0}
+.shippingRow,.totalRow{display:flex;justify-content:space-between;gap:10px;margin:7px 0}
+.totalRow{font-size:19px;font-weight:900;border-top:1px solid #ddd;padding-top:10px}
+.confirmOrder{width:100%;border:0;background:#080808;color:#fff;border-radius:13px;padding:14px;font-weight:bold;cursor:pointer;margin-top:8px}
+@media(max-width:560px){.checkoutGrid{grid-template-columns:1fr}.checkoutField.full{grid-column:auto}.checkoutCard{margin:0 auto;border-radius:20px;padding:17px}}
+
+@media(max-width:850px){.grid{grid-template-columns:repeat(3,1fr)}.categories{grid-template-columns:repeat(2,1fr)}.heroBox{display:none}}
+@media(max-width:560px){.nav{min-height:64px}.logo{font-size:18px}.logoMark{width:36px;height:36px}.grid{grid-template-columns:repeat(2,1fr);gap:9px}.hero{min-height:280px;padding:22px}.hero h1{font-size:34px}.categories{gap:7px}.cat{padding:12px}.cardBody{padding:10px}.card h3{font-size:13px}.price{font-size:16px}.desc{min-height:auto}.tools{margin-top:15px}}
+
+.favoriteBtn{
+  position:absolute;
+  right:10px;
+  bottom:10px;
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.94);
+  color:#999;
+  display:grid;
+  place-items:center;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.14);
+  transition:.2s ease;
+  z-index:3;
+}
+.favoriteBtn.active{color:#e91e63;background:#fff}
+.favoriteBtn:active{transform:scale(.92)}
+
+.detailOverlay{display:none;position:fixed;inset:0;background:#0009;z-index:90;padding:18px;overflow:auto}.detailCard{background:#fff;width:min(520px,100%);margin:20px auto;border-radius:24px;padding:18px;box-shadow:0 20px 60px #0005}.detailTop{display:flex;justify-content:flex-end}.detailImg{width:100%;max-height:430px;object-fit:cover;border-radius:18px}.detailCard h2{margin:15px 0 6px}.detailPrice{font-size:24px;font-weight:900}.detailDesc{color:#777;line-height:1.8;white-space:pre-wrap}.detailClose{border:0;background:#eee;border-radius:10px;padding:8px 11px;cursor:pointer}
+
+.ordersOverlay{display:none;position:fixed;inset:0;background:#0009;z-index:90;padding:18px;overflow:auto}
+.ordersCard{background:#fff;width:min(560px,100%);margin:20px auto;border-radius:24px;padding:22px;box-shadow:0 20px 60px #0005}
+.orderBox{border:1px solid #e5e5e5;border-radius:16px;padding:14px;margin:10px 0;background:#fafafa}
+.orderBox b{font-size:16px}.orderMeta{color:#666;font-size:12px;margin-top:5px;line-height:1.8}
+.orderStatus{display:inline-block;background:#111;color:#fff;border-radius:20px;padding:6px 10px;font-size:11px;margin-top:8px}
+.emptyOrders{text-align:center;color:#777;padding:25px 5px}
+.orderSuccess{position:fixed;inset:0;background:#0009;z-index:100;display:none;padding:18px}
+.orderSuccessCard{background:#fff;width:min(500px,100%);margin:80px auto;border-radius:24px;padding:28px;text-align:center;box-shadow:0 20px 60px #0006}
+.orderNumber{font-size:28px;font-weight:900;letter-spacing:1px;margin:14px 0}
+.orderSuccessCard button{width:100%;border:0;background:#111;color:#fff;border-radius:12px;padding:13px;font-weight:bold;cursor:pointer}
+</style>
+</head>
+<body>
+<header class="header"><div class="wrap nav">
+  <div class="logo"><div class="logoMark">A</div><div>A STYLE<span class="sub">متجر الملابس والأزياء</span></div></div>
+  <div class="navBtns"><button class="iconBtn" onclick="showFavorites()">♡ المفضلة <span id="favCount">0</span></button><button class="iconBtn" onclick="openCart()">🛒 السلة <span id="count">0</span></button></div>
+</div></header>
+
+<main class="wrap">
+<section class="hero">
+  <div class="heroText">
+    <span class="pill">A STYLE COLLECTION ✦</span>
+    <h1>أهلاً بيكي في A STYLE 🖤</h1>
+    <p>اختاري أحدث الموديلات، شوفي السعر والتفاصيل، وضيفي اللي يعجبك للسلة. طلبك بيتجهز بسهولة على واتساب.</p>
+    <button class="heroBtn" onclick="document.getElementById('productsSection').scrollIntoView()">تسوقي الآن ←</button>
+  </div>
+  <div class="heroBox">A</div>
+</section>
+
+<section class="categories" id="cats"></section>
+
+<section id="productsSection">
+  <div class="tools">
+    <input id="search" class="search" placeholder="🔎 دوري على منتج...">
+    <button class="refresh" onclick="load()">تحديث</button>
+  </div>
+  <div class="sectionTitle"><div><h2>أحدث المنتجات</h2><p>المنتجات المضافة من لوحة التحكم تظهر هنا تلقائيًا.</p></div><span id="totalProducts"></span></div>
+  <div id="products" class="grid"><div class="empty">جاري تحميل المنتجات...</div></div>
+</section>
+</main>
+
+<button class="cart" onclick="openCart()">🛒 السلة (<span id="count2">0</span>)</button>
+<div class="drawer" id="drawer" onclick="if(event.target===this)closeCart()">
+  <div class="panel">
+    <div class="panelHead"><h2>سلة المشتريات</h2><button class="close" onclick="closeCart()">✕</button></div>
+    <div id="cartItems"></div><hr>
+    <h3>الإجمالي: <span id="total">0</span> ج.م</h3>
+    <button class="wa" onclick="openCheckout()">متابعة الطلب 💬</button>
+  </div>
+</div>
+
+
+<div class="checkoutOverlay" id="checkoutOverlay" onclick="if(event.target===this)closeCheckout()">
+  <form class="checkoutCard" id="checkoutForm">
+    <div class="checkoutHead">
+      <h2>بيانات الشحن 🛍️</h2>
+      <button type="button" class="checkoutClose" onclick="closeCheckout()">✕</button>
+    </div>
+    <div class="checkoutGrid">
+      <div class="checkoutField">
+        <label>الاسم *</label>
+        <input id="customerName" required placeholder="اكتبي الاسم">
+      </div>
+      <div class="checkoutField">
+        <label>رقم الموبايل *</label>
+        <input id="customerPhone" type="tel" inputmode="tel" required placeholder="01xxxxxxxxx">
+      </div>
+      <div class="checkoutField full">
+        <label>المحافظة *</label>
+        <select id="customerGovernorate" required>
+          <option value="">اختاري المحافظة</option>
+          <option>القاهرة</option><option>الجيزة</option><option>القليوبية</option>
+          <option>الغربية</option><option>المنوفية</option><option>الشرقية</option>
+          <option>الدقهلية</option><option>بورسعيد</option><option>الإسماعيلية</option>
+          <option>السويس</option><option>دمياط</option><option>كفر الشيخ</option>
+          <option>البحيرة</option><option>الإسكندرية</option>
+          <option>الساحل الشمالي</option><option>مطروح</option>
+          <option>بني سويف</option><option>الفيوم</option><option>المنيا</option>
+          <option>أسيوط</option><option>سوهاج</option><option>الأقصر</option>
+          <option>قنا</option><option>أسوان</option><option>الوادي الجديد</option>
+          <option>البحر الأحمر - الغردقة</option><option>جنوب سيناء - شرم الشيخ</option>
+        </select>
+      </div>
+      <div class="checkoutField full">
+        <label>العنوان بالتفصيل *</label>
+        <textarea id="customerAddress" required placeholder="المنطقة - الشارع - رقم العقار - الدور..."></textarea>
+      </div>
+      <div class="checkoutField full">
+        <label>ملاحظات (اختياري)</label>
+        <textarea id="customerNotes" placeholder="أي ملاحظات على الطلب"></textarea>
+      </div>
+    </div>
+
+    <div class="shippingBox">
+      <div class="shippingRow"><span>إجمالي المنتجات</span><b><span id="checkoutProductsTotal">0</span> ج.م</b></div>
+      <div class="shippingRow"><span>🚚 الشحن</span><b><span id="shippingPrice">—</span></b></div>
+      <div class="totalRow"><span>الإجمالي النهائي</span><span><span id="checkoutGrandTotal">0</span> ج.م</span></div>
+    </div>
+    <button class="confirmOrder" type="submit">تأكيد وإرسال الطلب على واتساب 💬</button>
+  </form>
+</div>
+
+
+<div class="detailOverlay" id="detailOverlay" onclick="if(event.target===this)closeDetails()">
+ <div class="detailCard">
+  <div class="detailTop"><button class="detailClose" onclick="closeDetails()">✕</button></div>
+  <div id="detailContent"></div>
+ </div>
+</div>
+
+
+<div class="orderSuccess" id="orderSuccess">
+  <div class="orderSuccessCard">
+    <div style="font-size:48px">🎉</div>
+    <h2>تم تجهيز طلبك ❤️</h2>
+    <p>رقم طلبك:</p>
+    <div class="orderNumber" id="successOrderNumber"></div>
+    <p style="color:#777;line-height:1.8">سيتم فتح واتساب لإرسال تفاصيل الطلب. احتفظي برقم الطلب للمتابعة.</p>
+    <button onclick="closeSuccessAndOpenWhatsApp()">متابعة إلى واتساب 💬</button>
+  </div>
+</div>
+<div class="ordersOverlay" id="ordersOverlay" onclick="if(event.target===this)closeOrders()">
+  <div class="ordersCard">
+    <div class="checkoutHead">
+      <h2>طلباتي 📦</h2>
+      <button type="button" class="checkoutClose" onclick="closeOrders()">✕</button>
+    </div>
+    <div id="ordersList"></div>
+  </div>
+</div>
+<footer class="footer"><div class="wrap"><b>A STYLE</b><p>متجر الملابس والأزياء — اختاري، ضيفي للسلة، واطلبي بسهولة.</p></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://atwpvvzxqqwcbyjsttwr.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_i9kMQbMAL5y-pkniTpftmw_6ab3_bB6";
+const WHATSAPP="201507540976";
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const categories=["الكل","كاجوال حريمي","أطفالي","لانجيري و هوم وير","رجالي"];
+let products=[],cartItems=[],cat="الكل";
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function money(v){return Number(v||0).toLocaleString("ar-EG")}
+document.getElementById("cats").innerHTML=categories.map((x,i)=>`<button class="cat ${i===0?"active":""}" onclick="setCat('${esc(x)}',this)"><b>${x==="الكل"?"كل المنتجات":x}</b><span>${x==="الكل"?"أحدث المنتجات":"تشكيلة A STYLE"}</span></button>`).join("");
+function setCat(x,b){cat=x;document.querySelectorAll(".cat").forEach(e=>e.classList.remove("active"));b.classList.add("active");render()}
+document.getElementById("search").oninput=render;
+
+async function load(){
+ const box=document.getElementById("products"); box.innerHTML='<div class="empty">جاري تحميل المنتجات...</div>';
+ const {data,error}=await db.from("products").select("*").eq("is_active",true).order("created_at",{ascending:false});
+ if(error){console.error(error);box.innerHTML='<div class="empty">❌ تعذر تحميل المنتجات. تأكدي من إعداد قاعدة البيانات.</div>';return}
+ products=data||[];render();
+}
+function render(){
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ const arr=products.filter(p=>(cat==="الكل"||p.category===cat)&&(!q||String(p.name||"").toLowerCase().includes(q)||String(p.description||"").toLowerCase().includes(q)));
+ document.getElementById("totalProducts").textContent=arr.length+" منتج";
+ document.getElementById("products").innerHTML=arr.map(p=>`
+ <article class="card">
+  <div class="imgWrap"><img src="${esc(p.image_url||"")}" alt="${esc(p.name)}"><button class="favoriteBtn ${isFavorite(p.id)?"active":""}" onclick="toggleFavorite('${p.id}',event)" aria-label="إضافة للمفضلة">${isFavorite(p.id)?"♥":"♡"}</button>${p.is_featured?'<span class="tag">مميز ✦</span>':""}</div>
+  <div class="cardBody"><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||"")}</div>
+   <div class="prices"><span class="price">${money(p.price)} ج.م</span></div>
+   <button class="buy" onclick="openDetails('${p.id}')">عرض التفاصيل 👀</button><button class="buy" style="margin-top:7px" onclick="add('${p.id}')">أضيفي للسلة 🛒</button>
+  </div>
+ </article>`).join("")||'<div class="empty">لا توجد منتجات في هذا القسم حاليًا.</div>';
+}
+
+let favorites = JSON.parse(localStorage.getItem("a_style_favorites") || "[]");
+
+function isFavorite(id){
+  return favorites.some(x => String(x) === String(id));
+}
+
+function toggleFavorite(id, event){
+  if(event) event.stopPropagation();
+  const key = String(id);
+  if(isFavorite(key)){
+    favorites = favorites.filter(x => String(x) !== key);
+  }else{
+    favorites.push(key);
+  }
+  localStorage.setItem("a_style_favorites", JSON.stringify(favorites));
+  updateFavCount();
+  render();
+}
+
+function updateFavCount(){
+  const el=document.getElementById("favCount");
+  if(el) el.textContent=favorites.length;
+}
+function showFavorites(){
+  const favProducts=products.filter(p=>isFavorite(p.id));
+  document.getElementById("productsSection").scrollIntoView({behavior:"smooth"});
+  const box=document.getElementById("products");
+  document.getElementById("totalProducts").textContent=favProducts.length+" مفضل";
+  box.innerHTML=favProducts.map(p=>`
+ <article class="card">
+  <div class="imgWrap"><img src="${esc(p.image_url||"")}" alt="${esc(p.name)}"><button class="favoriteBtn active" onclick="toggleFavorite('${p.id}',event)" aria-label="إزالة من المفضلة">♥</button></div>
+  <div class="cardBody"><h3>${esc(p.name)}</h3><div class="desc">${esc(p.description||"")}</div>
+   <div class="prices"><span class="price">${money(p.price)} ج.م</span></div>
+   <button class="buy" onclick="openDetails('${p.id}')">عرض التفاصيل 👀</button><button class="buy" style="margin-top:7px" onclick="add('${p.id}')">أضيفي للسلة 🛒</button>
+  </div>
+ </article>`).join("")||'<div class="empty">لسه مفيش منتجات في المفضلة ❤️</div>';
+}
+function openDetails(id){
+ const p=products.find(x=>String(x.id)===String(id));
+ if(!p)return;
+ document.getElementById("detailContent").innerHTML=`
+  <img class="detailImg" src="${esc(p.image_url||"")}" alt="${esc(p.name)}">
+  <h2>${esc(p.name)}</h2>
+  <div class="detailPrice">${money(p.price)} ج.م</div>
+  <p class="detailDesc">${esc(p.description||"لا يوجد وصف إضافي للمنتج.")}</p>
+  <button class="confirmOrder" onclick="add('${p.id}');closeDetails()">أضيفي للسلة 🛒</button>
+ `;
+ document.getElementById("detailOverlay").style.display="block";
+}
+function closeDetails(){document.getElementById("detailOverlay").style.display="none"}
+
+function add(id){const p=products.find(x=>String(x.id)===String(id));if(!p)return;const x=cartItems.find(x=>String(x.id)===String(id));if(x)x.qty++;else cartItems.push({id:p.id,product:p,qty:1});updateCount();openCart()}
+function updateCount(){const n=cartItems.reduce((s,x)=>s+x.qty,0);document.getElementById("count").textContent=n;document.getElementById("count2").textContent=n}
+function openCart(){document.getElementById("drawer").style.display="block";renderCart()}
+function closeCart(){document.getElementById("drawer").style.display="none"}
+function renderCart(){const box=document.getElementById("cartItems");box.innerHTML=cartItems.map((x,i)=>`<div class="item"><img src="${esc(x.product.image_url||"")}"><div><b>${esc(x.product.name)}</b><div>${money(x.product.price)} ج.م</div><div class="qty"><button onclick="changeQty(${i},-1)">−</button>${x.qty}<button onclick="changeQty(${i},1)">+</button></div></div></div>`).join("")||"<p>السلة فارغة.</p>";document.getElementById("total").textContent=money(cartItems.reduce((s,x)=>s+Number(x.product.price||0)*x.qty,0))}
+function changeQty(i,n){cartItems[i].qty+=n;if(cartItems[i].qty<=0)cartItems.splice(i,1);updateCount();renderCart()}
+const shippingRates={
+ "القاهرة":70,"الجيزة":70,
+ "القليوبية":85,"الغربية":85,"المنوفية":85,"الشرقية":85,"الدقهلية":85,
+ "بورسعيد":85,"الإسماعيلية":85,"السويس":85,"دمياط":85,"كفر الشيخ":85,
+ "البحيرة":85,"الإسكندرية":85,
+ "الساحل الشمالي":130,"مطروح":130,
+ "بني سويف":95,"الفيوم":95,"المنيا":95,"أسيوط":95,"سوهاج":95,
+ "الأقصر":95,"قنا":95,"أسوان":95,"الوادي الجديد":100,
+ "البحر الأحمر - الغردقة":130,"جنوب سيناء - شرم الشيخ":130
+};
+
+function cartProductsTotal(){
+ return cartItems.reduce((s,x)=>s+Number(x.product.price||0)*x.qty,0);
+}
+function getShipping(){
+ const gov=document.getElementById("customerGovernorate").value;
+ return shippingRates[gov] ?? 0;
+}
+function updateCheckoutTotals(){
+ const productsTotal=cartProductsTotal();
+ const gov=document.getElementById("customerGovernorate").value;
+ const shipping=gov?getShipping():0;
+ document.getElementById("checkoutProductsTotal").textContent=money(productsTotal);
+ document.getElementById("shippingPrice").textContent=gov?(money(shipping)+" ج.م"):"—";
+ document.getElementById("checkoutGrandTotal").textContent=money(productsTotal+shipping);
+}
+
+function getSavedOrders(){
+  try { return JSON.parse(localStorage.getItem("a_style_orders") || "[]"); }
+  catch(e){ return []; }
+}
+function saveOrders(list){
+  localStorage.setItem("a_style_orders", JSON.stringify(list.slice(0,20)));
+  updateOrdersCount();
+}
+function updateOrdersCount(){
+  const el=document.getElementById("ordersCount");
+  if(el) el.textContent=getSavedOrders().length;
+}
+function generateOrderNumber(){
+  const d=new Date();
+  const stamp=d.getFullYear().toString().slice(-2)+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0");
+  const rnd=Math.floor(1000+Math.random()*9000);
+  return "AS-"+stamp+"-"+rnd;
+}
+function openOrders(){
+  const list=getSavedOrders();
+  const box=document.getElementById("ordersList");
+  if(!list.length){
+    box.innerHTML='<div class="emptyOrders">لسه مفيش طلبات محفوظة على الجهاز 📦</div>';
+  }else{
+    box.innerHTML=list.map(o=>`
+      <div class="orderBox">
+        <b>${esc(o.number)}</b>
+        <div class="orderMeta">${esc(o.date)}<br>المحافظة: ${esc(o.gov)}<br>الإجمالي: ${money(o.total)} ج.م</div>
+        <span class="orderStatus">${esc(o.status)}</span>
+      </div>
+    `).join("");
+  }
+  document.getElementById("ordersOverlay").style.display="block";
+}
+function closeOrders(){document.getElementById("ordersOverlay").style.display="none"}
+let pendingWhatsAppUrl="";
+function closeSuccessAndOpenWhatsApp(){
+  document.getElementById("orderSuccess").style.display="none";
+  if(pendingWhatsAppUrl) location.href=pendingWhatsAppUrl;
+}
+function openCheckout(){
+ if(!cartItems.length){alert("السلة فارغة");return}
+ document.getElementById("checkoutOverlay").style.display="block";
+ updateCheckoutTotals();
+}
+function closeCheckout(){document.getElementById("checkoutOverlay").style.display="none"}
+document.getElementById("customerGovernorate").addEventListener("change",updateCheckoutTotals);
+
+document.getElementById("checkoutForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ if(!cartItems.length){alert("السلة فارغة");closeCheckout();return}
+
+ const name=document.getElementById("customerName").value.trim();
+ const phone=document.getElementById("customerPhone").value.trim();
+ const gov=document.getElementById("customerGovernorate").value;
+ const address=document.getElementById("customerAddress").value.trim();
+ const notes=document.getElementById("customerNotes").value.trim();
+ const productsTotal=cartProductsTotal();
+ const shipping=getShipping();
+ const grandTotal=productsTotal+shipping;
+ const orderNumber=generateOrderNumber();
+ const now=new Date();
+ const date=now.toLocaleString("ar-EG");
+
+ let lines=[
+  "السلام عليكم ❤️",
+  "أريد تأكيد هذا الطلب من A STYLE 🛍️",
+  "",
+  "📦 رقم الطلب: "+orderNumber,
+  "👤 الاسم: "+name,
+  "📱 الهاتف: "+phone,
+  "📍 المحافظة: "+gov,
+  "🏠 العنوان: "+address,
+  ""
+ ];
+ cartItems.forEach(x=>{
+  lines.push(
+   "🛍️ المنتج: "+x.product.name,
+   "🔢 الكمية: "+x.qty,
+   "💰 سعر القطعة: "+money(x.product.price)+" ج.م",
+   "💵 إجمالي المنتج: "+money(Number(x.product.price||0)*x.qty)+" ج.م",
+   ""
+  );
+ });
+ lines.push(
+  "💰 إجمالي المنتجات: "+money(productsTotal)+" ج.م",
+  "🚚 الشحن: "+money(shipping)+" ج.م",
+  "💵 الإجمالي النهائي: "+money(grandTotal)+" ج.م"
+ );
+ if(notes) lines.push("","📝 ملاحظات: "+notes);
+
+ const order={
+   number:orderNumber,
+   date:date,
+   gov:gov,
+   total:grandTotal,
+   status:"تم إنشاء الطلب",
+   customer:name,
+   items:cartItems.map(x=>({name:x.product.name,qty:x.qty,price:Number(x.product.price||0)}))
+ };
+ const orders=getSavedOrders();
+ orders.unshift(order);
+ saveOrders(orders);
+
+ pendingWhatsAppUrl="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(lines.join("\n"));
+ closeCheckout();
+ document.getElementById("successOrderNumber").textContent=orderNumber;
+ document.getElementById("orderSuccess").style.display="block";
+ cartItems=[];
+ renderCart();
+});
+
+updateFavCount();
+updateOrdersCount();
+load();
+</script>
+</body>
+</html>
